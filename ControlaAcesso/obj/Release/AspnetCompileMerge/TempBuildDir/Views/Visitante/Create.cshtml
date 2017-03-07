@@ -1,0 +1,186 @@
+﻿@model ControlaAcesso.Models.Visitante
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Cadastrar</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Visitante</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Nome, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Nome, new { htmlAttributes = new { @class = "form-control", @autocomplete = "off" } })
+                @Html.ValidationMessageFor(model => model.Nome, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DataNascimento, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DataNascimento, new { htmlAttributes = new { @class = "form-control", data_val_date = "Data invalida", @autocomplete = "off", @onkeypress = "mascaraData(this); return ApenasNumero(event);", @onblur = "DataValida(this, this.value);", @maxlength = "10" } })
+                @Html.ValidationMessageFor(model => model.DataNascimento, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Contato, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Contato, new { htmlAttributes = new { @class = "form-control", @autocomplete = "off" } })
+                @Html.ValidationMessageFor(model => model.Contato, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.CPF, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CPF, new { htmlAttributes = new { @class = "form-control", @autocomplete = "off" } })
+                @Html.ValidationMessageFor(model => model.CPF, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group" id="ServerImgFrame">
+            @Html.Label("Foto", htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                <div id="CamResult" style="width: 280px; height: 280px;" class="img-responsive"></div>
+                <input id="CamResult64" type="hidden" name="CamResult64" value="" />
+            </div>
+            <input type="hidden" name="ToggleCam" id="ToggleCam" value="0">
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type=button value="Usar Webcam" id="BtnFoto" name="BtnFoto" class="btn btn-default">
+                    @*<input type=file accept="image/*" value="Escolher Imagem..." class="">*@
+                </div>
+            </div>
+        </div>
+        <div class="form-group" id="CameraFrame" style="display: none;">
+            @Html.Label("Camera", htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                <div id="my_camera" class="img-responsive"></div>
+                <input type=button value="Tirar Foto" id="BtnTirarFoto" onclick="take_snapshot()" class="btn btn-default">
+                <input type=button value="Cancelar" id="BtnCancelar" name="BtnCancelar" class="btn btn-default">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Voltar a lista", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/webcam.js" type="text/javascript"></script>
+    <script src="~/Scripts/jquery-ui-1.10.4.custom.js"></script>
+    <script src="~/Scripts/Uteis.js"></script>
+    <script type="text/javascript">
+        function take_snapshot() {
+            // take snapshot and get image data
+            Webcam.snap(function (data_uri) {
+                // display results in page
+                var raw_image_data = data_uri.replace(/^data\:image\/\w+\;base64\,/, '');
+
+                document.getElementById('CamResult64').value = raw_image_data;
+                document.getElementById('CamResult').innerHTML = '<img id="UserPicture" src="' + data_uri + '" />';
+            });
+            Webcam.reset();
+            $('input#ToggleCam').val('0');
+        }
+
+
+        //Busca Imagem No Servidor
+        var ImgFileName = $('#CPF').val();
+        $.ajax({
+
+            url: '/IMG/' + ImgFileName + '.jpg',
+            type: 'HEAD',
+            error:
+                function () {
+                    document.getElementById('CamResult').innerHTML = '<img id="UserPicture" src="/IMG/No-photo.png" class="img-responsive"/>';
+                },
+            success:
+                function () {
+                    alert("Encontrou")
+                }
+        });
+
+        $(function () {
+            // run the currently selected effect
+            function runEffect() {
+                // get effect type from
+                var selectedEffect = "blind";
+
+                // Most effect types need no options passed by default
+                var options = {};
+                // some effects have required parameters
+                if (selectedEffect === "scale") {
+                    options = { percent: 50 };
+                } else if (selectedEffect === "size") {
+                    options = { to: { width: 200, height: 60 } };
+                }
+
+                // Run the effect
+                $("#CameraFrame").toggle(selectedEffect, options, 500);
+                $("#ServerImgFrame").toggle(selectedEffect, options, 500);
+
+
+            };
+
+            function ToggleWebCam() {
+                var ToggleCam = $('input#ToggleCam').val();
+
+                if (ToggleCam == '0') {
+                    Webcam.set({
+                        width: 280,
+                        height: 220,
+                        image_format: 'jpeg',
+                        jpeg_quality: 90,
+                        flip_horiz: true
+                    });
+                    Webcam.attach('#my_camera');
+                    $('input#ToggleCam').val('1');
+                }
+                else {
+                    Webcam.reset();
+                    $('input#ToggleCam').val('0');
+                }
+            }
+
+            // Set effect from select menu value
+            $("#BtnFoto").on("click", function () {
+                runEffect();
+                ToggleWebCam();
+            });
+
+            $("#BtnCancelar").on("click", function () {
+                runEffect();
+                ToggleWebCam();
+            })
+
+            $("#BtnTirarFoto").on("click", function () {
+                runEffect();
+            })
+
+
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#CPF").inputmask("mask", { "mask": "999.999.999-99" }, { reverse: true });            
+        }
+        );
+    </script>
+}

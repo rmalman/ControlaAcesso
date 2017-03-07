@@ -1,0 +1,79 @@
+﻿@model ControlaAcesso.Models.Visitante
+
+@{
+    ViewBag.Title = "Detalhe Visitante";
+}
+
+<h2>Detalhe</h2>
+
+<div>
+    <h4>Visitante</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nome)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nome)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DataNascimento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DataNascimento)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Contato)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Contato)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CPF)
+            @Html.HiddenFor(model => model.CPF)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CPF)
+        </dd>
+
+        <dt>
+            @Html.Label("Foto")
+        </dt>
+
+        <dd>
+            <div id="CamResult" style="width: 280px; height: 280px;" class="img-responsive"></div>
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Editar", "Edit", new { id = Model.VisitanteID }) |
+    @Html.ActionLink("Voltar a Lista", "Index")
+</p>
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")    
+    <script src="~/Scripts/jquery-ui-1.10.4.custom.js"></script>
+    <script type="text/javascript">
+        var ImgFileName = $('#CPF').val();
+        $.ajax({
+
+            url: '/IMG/' + ImgFileName + '.jpg',
+            type: 'HEAD',
+            error:
+                function () {
+                    document.getElementById('CamResult').innerHTML = '<img id="UserPicture" src="/IMG/No-photo.png" class="img-responsive"/>';
+                },
+            success:
+                function () {
+                    document.getElementById('CamResult').innerHTML = '<img src="/IMG/' + ImgFileName + '.jpg" class="img-responsive"/>';
+                }
+        });
+    </script>
+    }

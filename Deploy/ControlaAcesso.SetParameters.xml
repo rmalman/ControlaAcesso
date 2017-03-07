@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <setParameter name="IIS Web Application Name" value="ControlaAcesso" />
+  <setParameter name="ControlaAcessoContext-Web.config Connection String" value="Data Source=(LocalDb)\v11.0;AttachDbFilename=|DataDirectory|\aspnet-ControlaAcesso-20170103031308.mdf;Initial Catalog=aspnet-ControlaAcesso-20170103031308;Integrated Security=True" />
+</parameters>

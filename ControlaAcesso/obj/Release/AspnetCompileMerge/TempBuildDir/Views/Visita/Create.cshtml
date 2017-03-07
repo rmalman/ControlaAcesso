@@ -1,0 +1,159 @@
+﻿@model ControlaAcesso.Models.Visita
+
+@{
+    ViewBag.Title = "Visita";
+}
+
+<h2>Registrar</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Visita</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.RegistroEntrada, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.RegistroEntrada, new { htmlAttributes = new { @class = "form-control", @Value = @DateTime.Now.ToString() } })
+                @Html.ValidationMessageFor(model => model.RegistroEntrada, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.RegistroSaida, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.RegistroSaida, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.RegistroSaida, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.CodigoCracha, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CodigoCracha, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.CodigoCracha, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Empresa, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Empresa, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Empresa, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Assunto, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Assunto, new { htmlAttributes = new { @class = "form-control" } })                
+            </div>
+        </div>
+        <hr />
+        <div>
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.Label("Visitante")
+                </dt>
+
+                <dd>
+                    @*@Html.TextBox("disp", (string)@ViewBag.VisitanteID.Nome, new { @readonly = true })*@
+                    @ViewBag.VisitanteID.Nome
+                </dd>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Visitante.CPF)
+                    @Html.Hidden("CPF", (long)ViewBag.VisitanteID.CPF)
+                </dt>
+
+                <dd>
+                    @String.Format("{0:000000000-00}", (long)ViewBag.VisitanteID.CPF)
+                </dd>
+
+                <dt>
+                    @Html.Label("Foto")
+                </dt>
+
+                <dd>
+                    <div id="CamResult" style="width: 120px; height: 120px;" class="img-responsive"></div>
+                </dd>
+
+            </dl>
+        </div>
+        <div class="form-group" id="Result" style="display: none;">
+            @Html.Label("Dados", htmlAttributes: new { @class = "control-label col-md-2" })
+
+            <div class="col-md-10">
+                <div id="My_Data" class="img-responsive"></div>
+                <input type=button value="Tirar Foto" id="BtnTirarFoto" onclick="take_snapshot()" class="btn btn-default">
+                <input type=button value="Cancelar" id="BtnCancelar" name="BtnCancelar" class="btn btn-default">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Registrar" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @if (Request.QueryString["VisitanteID"] == null)
+    {
+        @Html.ActionLink("Voltar a lista", "Index");
+    }
+    else
+    {
+        @Html.ActionLink("Voltar a lista", "../Visitante/Index");
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery-3.1.1.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            // run the currently selected effect
+            function runEffect() {
+                // get effect type from
+                var selectedEffect = "blind";
+
+                // Most effect types need no options passed by default
+                var options = {};
+                // some effects have required parameters
+                if (selectedEffect === "scale") {
+                    options = { percent: 50 };
+                } else if (selectedEffect === "size") {
+                    options = { to: { width: 200, height: 60 } };
+                }
+
+                // Run the effect
+                $("#CameraFrame").toggle(selectedEffect, options, 500);
+                $("#ServerImgFrame").toggle(selectedEffect, options, 500);
+
+
+            };
+        });        
+        var ImgFileName = $('#CPF').val();
+        $.ajax({
+
+            url: '/IMG/' + ImgFileName + '.jpg',
+            type: 'HEAD',
+            error:
+                function () {
+                    document.getElementById('CamResult').innerHTML = '<img id="UserPicture" src="/IMG/No-photo.png" class="img-responsive"/>';
+                },
+            success:
+                function () {
+                    document.getElementById('CamResult').innerHTML = '<img src="/IMG/' + ImgFileName + '.jpg" class="img-responsive"/>';
+                }
+        });
+        
+    </script>
+
+}

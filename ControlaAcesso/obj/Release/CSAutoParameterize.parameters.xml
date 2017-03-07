@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="ControlaAcessoContext-Web.config Connection String" description="ControlaAcessoContext Connection String used in web.config by the application to access the database." defaultValue="Data Source=(LocalDb)\v11.0;AttachDbFilename=|DataDirectory|\aspnet-ControlaAcesso-20170103031308.mdf;Initial Catalog=aspnet-ControlaAcesso-20170103031308;Integrated Security=True" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Trab\\First-Tech\\ControlaAcesso\\ControlaAcesso\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='ControlaAcessoContext']/@connectionString" />
+  </parameter>
+</parameters>

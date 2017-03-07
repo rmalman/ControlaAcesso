@@ -1,0 +1,65 @@
+﻿@model ControlaAcesso.Models.Visita
+
+@{
+    ViewBag.Title = "Detalhe Visita";
+}
+
+<h2>Detalhe</h2>
+
+<div>
+    <h4>Visita</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Visitante.Nome)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Visitante.Nome)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RegistroEntrada)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RegistroEntrada)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RegistroSaida)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RegistroSaida)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CodigoCracha)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CodigoCracha)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Empresa)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Empresa)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Assunto)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Assunto)
+        </dd>
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Editar", "Edit", new { id = Model.VisitaID }) |
+    @Html.ActionLink("Voltar a lista", "Index")
+</p>

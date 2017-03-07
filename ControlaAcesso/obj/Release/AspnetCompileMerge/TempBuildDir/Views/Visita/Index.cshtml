@@ -1,0 +1,264 @@
+﻿@model IEnumerable<ControlaAcesso.Models.Visita>
+
+@*@{
+        ViewBag.Title = "Index";
+    }*@
+@if (Request.QueryString["CrachaAberto"] == null)
+{
+    if (Request.QueryString["Relatorio"] != null)
+    {
+        ViewBag.Title = "Histórico de Visitas";
+        <h2>Histórico de Visitas</h2>
+    }
+    else
+    {
+        ViewBag.Title = "Registro de Visitas";
+        <h2>Índice de Visitas</h2>
+    }
+    @*<p>
+            @Html.ActionLink("Registrar Visita", "Create")
+        </p>*@
+}
+else
+{
+    ViewBag.Title = "Crachás em Aberto";
+    <h2>Crachás em Aberto</h2>
+}
+
+
+@using (Html.BeginForm())
+{
+    if (Request.QueryString["Relatorio"] == null)
+    {
+        <p>
+            <div class="input-group col-md-4">
+                <div class="input-group-btn search-panel">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <span id="search_concept">Buscar por</span> <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" id="SearchOption" name="SearchOption">
+                        <li>
+                            <a href="#CPF"><span class="t">CPF</span></a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#Cracha"><span class="t">Crachá</span></a>
+                        </li>
+                    </ul>
+                </div>
+                @Html.TextBox("SearchString", "", new { @class = "form-control", @placeholder = "Dados do visitante...", @autocomplete = "off" })
+                @Html.Hidden("sortOrder", null)
+
+                @*<input type="submit" value="Search" class="btn btn-default input-lg" />*@
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
+                </span>
+            </div>
+            <span class="field-validation-error text-danger" id="errmsg"></span>
+        </p>
+    }
+    else
+    {
+        <p>
+            <div class="form-inline">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <span id="search_concept">Buscar por</span>
+                            <button type="button" class="input-group-btn btn dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" id="SearchOption" name="SearchOption">
+                                <li selected="true">
+                                    <a href="#Entrada"><span class="t">Registro de entrada</span></a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="#Saida"><span class="t">Registro de saída</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                        @Html.TextBox("SearchString", "", new { @class = "form-control", @placeholder = "Data inicial", @Value = @DateTime.Today.AddMonths(-1).ToShortDateString(), @autocomplete = "off", @onkeypress = "mascaraData(this); return ApenasNumero(event);", @onblur = "DataValida(this, this.value); ComparaDatas('SearchString', 'SearchString2')", @maxlength = "10" })
+                        <div class="input-group-addon">até</div>
+                        @Html.TextBox("SearchString2", "", new { @class = "form-control", @placeholder = "Data final", @Value = @DateTime.Today.ToShortDateString(), @autocomplete = "off", @style = "display:inline", @onkeypress = "mascaraData(this); return ApenasNumero(event);", @onblur = "DataValida(this, this.value); ComparaDatas('SearchString', 'SearchString2');", @maxlength = "10" })
+                        @Html.Hidden("sortOrder", null)
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
+            </div>
+            <div class="help-block with-errors">
+                <span class="field-validation-error text-danger" id="errmsg"></span>
+            </div>
+        </p>
+    }
+}
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Visitante.Nome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RegistroEntrada)
+        </th>
+        @if (Request.QueryString["CrachaAberto"] == null)
+        {
+        <th>
+            @Html.DisplayNameFor(model => model.RegistroSaida)
+        </th>
+        }
+        <th>
+            @Html.DisplayNameFor(model => model.CodigoCracha)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Empresa)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Visitante.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RegistroEntrada)
+            </td>
+            @if (Request.QueryString["CrachaAberto"] == null)
+            {
+            <td>
+                @Html.DisplayFor(modelItem => item.RegistroSaida)
+            </td>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.CodigoCracha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Empresa)
+            </td>
+            @if (Request.QueryString["CrachaAberto"] == null)
+            {
+                <td>
+                    @*@Html.ActionLink("Editar", "Edit", new { id = item.VisitaID }) |*@
+                    @Html.ActionLink("Detalhe", "Details", new { id = item.VisitaID }) |
+                    @Html.ActionLink("Excluir", "Delete", new { id = item.VisitaID })
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.ActionLink("Efetuar Baixa", "Edit", new { id = item.VisitaID, EfetuaBaixa = 1 }) |
+                    @Html.ActionLink("Detalhe", "Details", new { id = item.VisitaID })
+                </td>
+            }
+
+        </tr>
+    }
+
+</table>
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery-3.1.1.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/Uteis.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function (e) {
+            var SearchFilter
+            $('#SearchOption').find('a').click(function (e) {
+                e.preventDefault();
+                var Handler = function (e) {
+                    //Se não for numero, retorna falso
+                    if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+                        //Mensagem de erro
+                        //$("#errmsg").html("Apenas Numeros").show().fadeOut("slow");
+                        return false;
+                    }
+                };
+                $('ul.dropdown-menu li').click(function (e) {
+                    SearchFilter = $(this).find("span.t").text();
+                    if (SearchFilter === "CPF") {
+                        $("#SearchString").attr("placeholder", "Digite o CPF (apenas números)");
+                        $("#SearchString").attr("maxlength", "11");
+                        $("#SearchString").attr("onblur", "ValidarCPF(this);");
+                        $("#SearchString").val("");
+                        $("#SearchString").bind("keypress", Handler);
+                        $("#sortOrder").val("CPF");
+
+                    } else if (SearchFilter === "Crachá") {
+                        $("#SearchString").attr("placeholder", "Digite o crachá do visitante...");
+                        $("#SearchString").attr("maxlength", "32");
+                        $("#SearchString").attr("onblur", "");
+                        $("#SearchString").val("");
+                        $("#SearchString").unbind("keypress", Handler);
+                        $("#sortOrder").val("Cracha");
+                    } else if (SearchFilter === "Registro de entrada") {
+                        $("#SearchString").attr("placeholder", "Data de entrada inicial");
+                        $("#SearchString").attr("maxlength", "10");
+                        $("#SearchString").val("");                        
+                        $("#SearchString2").attr("style", "display:inline");
+                        $("#SearchString2").attr("placeholder", "Data de entrada final");
+                        $("#SearchString2").val("");
+                        $("#sortOrder").val("Entrada");
+                    } else if (SearchFilter === "Registro de saída") {
+                        $("#SearchString").attr("placeholder", "Data de saída inicial");
+                        $("#SearchString").attr("maxlength", "10");
+                        $("#SearchString").val("");                        
+                        $("#SearchString2").attr("style", "display:inline");
+                        $("#SearchString2").attr("placeholder", "Data de saída final");
+                        $("#SearchString2").val("");
+                        $("#sortOrder").val("Saida");
+                    }
+
+                });
+                var param = $(this).attr("href").replace("#", "");
+                var concept = $(this).text();
+                $('.search-panel span#search_concept').text(concept);
+                $('.input-group #search_param').val(param);
+
+            });
+        });
+
+        function ValidarCPF(Objcpf) {
+            var cpf = Objcpf.value;
+            cpf = cpf.toString().replace(/[^\d]+/g, '');
+            if (cpf == '') return false; // Elimina CPFs invalidos conhecidos
+            if (cpf.length != 11 ||
+                cpf == "00000000000" ||
+                cpf == "11111111111" ||
+                cpf == "22222222222" ||
+                cpf == "33333333333" ||
+                cpf == "44444444444" ||
+                cpf == "55555555555" ||
+                cpf == "66666666666" ||
+                cpf == "77777777777" ||
+                cpf == "88888888888" ||
+                cpf == "99999999999") {
+                $("#errmsg").html("CPF Inválido").show().fadeOut(8000, "swing");
+                return false;       // Valida 1o digito
+            };
+            add = 0;
+            for (i = 0; i < 9; i++)
+                add += parseInt(cpf.charAt(i)) * (10 - i); rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11) rev = 0;
+            if (rev != parseInt(cpf.charAt(9))) {
+                $("#errmsg").html("CPF Inválido").show().fadeOut(8000, "swing");
+                return false;       // Valida 2o digito
+            }
+            add = 0; for (i = 0; i < 10; i++)
+                add += parseInt(cpf.charAt(i)) * (11 - i);
+            rev = 11 - (add % 11);
+            if (rev == 10 || rev == 11)
+                rev = 0;
+            if (rev != parseInt(cpf.charAt(10))) {
+                $("#errmsg").html("CPF Inválido").show().fadeOut(8000, "swing");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}
